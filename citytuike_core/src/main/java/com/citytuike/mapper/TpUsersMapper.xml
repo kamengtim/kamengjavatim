@@ -125,7 +125,7 @@
 		select * from tp_user_address as t where t.user_id=#{user_id}
 	</select>
 	
-	<select id="findUserAddresById" resultMap="TpRegion">
+	<select id="findAllByLevel" resultMap="TpRegion">
 		select * from tp_region as t where t.level=#{id}
 	</select>
 	
