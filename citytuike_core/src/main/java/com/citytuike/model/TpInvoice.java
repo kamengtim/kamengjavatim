@@ -23,7 +23,7 @@ public class TpInvoice implements Serializable{
 	/**
 	 * 0普通发票1电子发票2增值税发票
 	 */
-	private String invoice_type;
+	private int invoice_type;
 	/**
 	 * 发票金额
 	 */
@@ -56,6 +56,13 @@ public class TpInvoice implements Serializable{
 	 * 创建时间
 	 */
 	private Integer ctime;
+	
+	public int getInvoice_type() {
+		return invoice_type;
+	}
+	public void setInvoice_type(int invoice_type) {
+		this.invoice_type = invoice_type;
+	}
 	public Integer getInvoice_id() {
 		return invoice_id;
 	}
@@ -74,14 +81,33 @@ public class TpInvoice implements Serializable{
 	public void setUser_id(String user_id) {
 		this.user_id = user_id;
 	}
-	public String getInvoice_type() {
-		return invoice_type;
-	}
-	public void setInvoice_type(String invoice_type) {
-		this.invoice_type = invoice_type;
-	}
 	public double getInvoice_money() {
 		return invoice_money;
+	}
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		return super.equals(obj);
+	}
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return super.clone();
+	}
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return super.toString();
+	}
+	@Override
+	protected void finalize() throws Throwable {
+		// TODO Auto-generated method stub
+		super.finalize();
 	}
 	public void setInvoice_money(double invoice_money) {
 		this.invoice_money = invoice_money;
