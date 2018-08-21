@@ -26,6 +26,12 @@ public interface TpOrderService {
 
 	TpOrder findOrderById(Integer id);
 
+	int updataRecordRefundOrder(TpOrder tpOrder);
+
+	int updataOrderConfirm(TpOrder tpOrder);
+
+	int updateOrderAddress(TpOrder tpOrder);
+
 	
 
 }

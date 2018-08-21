@@ -1,6 +1,7 @@
 package com.citytuike.controller;
 
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.citytuike.model.LimitPageList;
 import com.citytuike.model.TpOrder;
+import com.citytuike.model.TpOrderAction;
 import com.citytuike.model.TpUsers;
 import com.citytuike.service.TpOrderService;
 import com.citytuike.service.TpUsersService;
@@ -38,7 +40,7 @@ public class OrderController {
 	@RequestMapping(value="/order_list",method=RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	public @ResponseBody String orderList(Model model,@RequestParam(required=true) String token,
 			@RequestParam(required=true) String type,
-			@RequestParam(required=true) Integer p){
+			@RequestParam(required=true, defaultValue="1") Integer p){
 		JSONObject jsonObj = new JSONObject();
 		JSONObject data = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
@@ -127,6 +129,129 @@ public class OrderController {
 			jsonObj.put("status", "1");
 			jsonObj.put("msg", "ok");
 			System.out.println("结果:" + jsonObj.toString());
+		}
+		return jsonObj.toString();
+	}
+	/**
+	 * @param model
+	 * @param token
+	 * @param id
+	 * @return
+	 * 申请取消订单
+	 */
+	@RequestMapping(value="/record_refund_order",method=RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	public @ResponseBody String recordRefundOrder(Model model,@RequestParam(required=true) String token,
+			@RequestParam(required=true) String order_id){
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("status", "0");
+		jsonObj.put("msg", "失败!");
+		TpUsers tpUsers = tpUsersService.findOneByToken(token);
+		if (null == tpUsers) {
+			jsonObj.put("status", "0");
+			jsonObj.put("msg", "请先登陆!");
+			return jsonObj.toString();
+		}
+		TpOrder tpOrder = tpOrderService.findOrderById(Integer.parseInt(order_id));
+		if (null != tpOrder) {
+			int result = tpOrderService.updataRecordRefundOrder(tpOrder);
+			if (result > 0) {
+				TpOrderAction tpOrderAction = new TpOrderAction();
+				tpOrderAction.setOrder_id(tpOrder.getOrder_id());
+				tpOrderAction.setOrder_status(tpOrder.getOrder_status());
+				tpOrderAction.setAction_note("您取消了订单，请等待系统确认");
+				tpOrderAction.setLog_time((int)new Date().getTime());
+				tpOrderAction.setStatus_desc("用户取消已付款订单");
+				int goodsResult1 =tpOrderService.insertOrderAction(tpOrderAction);
+				if (goodsResult1 > 0) {
+					jsonObj.put("status", "1");
+					jsonObj.put("msg", "ok");
+					System.out.println("结果:" + jsonObj.toString());
+				}
+			}
+			
+		}
+		return jsonObj.toString();
+	}
+	/**
+	 * @param model
+	 * @param token
+	 * @param id
+	 * @return
+	 * 确认收货
+	 */
+	@RequestMapping(value="/order_confirm",method=RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	public @ResponseBody String orderConfirm(Model model,@RequestParam(required=true) String token,
+			@RequestParam(required=true) String id){
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("status", "0");
+		jsonObj.put("msg", "失败!");
+		TpUsers tpUsers = tpUsersService.findOneByToken(token);
+		if (null == tpUsers) {
+			jsonObj.put("status", "0");
+			jsonObj.put("msg", "请先登陆!");
+			return jsonObj.toString();
+		}
+		TpOrder tpOrder = tpOrderService.findOrderById(Integer.parseInt(id));
+		if (null != tpOrder) {
+			int result = tpOrderService.updataOrderConfirm(tpOrder);
+			if (result > 0) {
+				TpOrderAction tpOrderAction = new TpOrderAction();
+				tpOrderAction.setOrder_id(tpOrder.getOrder_id());
+				tpOrderAction.setOrder_status(tpOrder.getOrder_status());
+				tpOrderAction.setAction_note("您订单已发货，请等待系统确认");
+				tpOrderAction.setLog_time((int)new Date().getTime());
+				tpOrderAction.setStatus_desc("订单发货");
+				int goodsResult1 =tpOrderService.insertOrderAction(tpOrderAction);
+				if (goodsResult1 > 0) {
+					jsonObj.put("status", "1");
+					jsonObj.put("msg", "ok");
+					System.out.println("结果:" + jsonObj.toString());
+				}
+			}
+			
+		}
+		return jsonObj.toString();
+	}
+	/**
+	 * @param model
+	 * @param token
+	 * @param order_id
+	 * @param province
+	 * @param city
+	 * @param district
+	 * @param address
+	 * @return
+	 * 修改订单收货地址
+	 */
+	@RequestMapping(value="/edit_order_address",method=RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	public @ResponseBody String editOrderAddress(Model model,@RequestParam(required=true) String token,
+			@RequestParam(required=true) String order_id,
+			@RequestParam(required=true) String province,
+			@RequestParam(required=true) String city,
+			@RequestParam(required=true) String district,
+			@RequestParam(required=true) String address){
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("status", "0");
+		jsonObj.put("msg", "失败!");
+		TpUsers tpUsers = tpUsersService.findOneByToken(token);
+		if (null == tpUsers) {
+			jsonObj.put("status", "0");
+			jsonObj.put("msg", "请先登陆!");
+			return jsonObj.toString();
+		}
+		TpOrder tpOrder = tpOrderService.findOrderById(Integer.parseInt(order_id));
+		if (null != tpOrder) {
+			tpOrder.setProvince(Integer.parseInt(province));
+			tpOrder.setCity(Integer.parseInt(city));
+			tpOrder.setDistrict(Integer.parseInt(district));
+			tpOrder.setAddress(address);
+			int result = tpOrderService.updateOrderAddress(tpOrder);
+			if (result > 0) {
+				jsonObj.put("status", "1");
+				jsonObj.put("msg", "ok");
+				System.out.println("结果:" + jsonObj.toString());
+			}
+			
 		}
 		return jsonObj.toString();
 	}

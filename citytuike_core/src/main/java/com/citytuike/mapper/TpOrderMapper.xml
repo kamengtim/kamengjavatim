@@ -15,8 +15,38 @@
     <select id="findOrderById" resultType="com.citytuike.model.TpOrder">  
         select *  from tp_order where order_id=#{id}
     </select>
-    <select id="selectByPage" resultMap="TpOrder">  
-        select *  from tp_order limit #{startPos},#{pageSize}
+    <select id="selectByPage" resultMap="TpOrder">
+    	select *  from tp_order
+    	
+    	<if test="type != null">
+    		where
+    		<if test='type == "ALL"'>
+			    1=1
+			</if>
+    		<if test='type == "WAITSEND"'>
+			    shipping_status=1 and order_status in(0, 1)
+			</if>
+		    <if test='type != null and type == "WAITPAY"'>
+			    pay_status=1 and order_status in(0, 1)
+			</if>
+		    <if test='type != null and type == "WAITRECEIVE"'>
+			    shipping_status=1 and order_status=0
+			</if>
+		    <if test='type != null and type == "WAITCCOMMENT"'>
+			    order_status=2
+			</if>
+		    <if test='type != null and type == "CANCEL"'>
+			    order_status=3
+			</if>
+		    <if test='type != null and type == "FINISH"'>
+			    order_status=4
+			</if>
+		    <if test='type != null and type == "CANCELLED"'>
+			    order_status=5
+			</if>
+    	</if>
+	    
+        limit #{startPos},#{pageSize}
     </select>  
     <!-- 取得记录的总数 -->  
     <select id="getCount" resultType="java.lang.Integer">
@@ -250,11 +280,15 @@
 			#{ctime}
 		);
 	</insert>
-	<update id="updateByStatus" parameterType="com.citytuike.model.TpSmsLog" >
-		UPDATE tp_sms_log
-		SET 
-				status=1
-		WHERE mobile = #{mobile}
+	<update id="updataRecordRefundOrder" parameterType="com.citytuike.model.TpOrder" >
+		UPDATE tp_order SET order_status=3 WHERE order_id = #{order_id}
+	</update>
+	<update id="updataOrderConfirm" parameterType="com.citytuike.model.TpOrder" >
+		UPDATE tp_order SET shipping_status=1 WHERE order_id = #{order_id}
+	</update>
+	<update id="updateOrderAddress" parameterType="com.citytuike.model.TpOrder" >
+		UPDATE tp_order SET province=#{province}, city=#{city}, 
+		district=#{district}, address=#{address} WHERE order_id = #{order_id}
 	</update>
 	
 	

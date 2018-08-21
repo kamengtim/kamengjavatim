@@ -52,11 +52,11 @@ public class TpOrderServiceImpl implements TpOrderService{
 	    if(p!=null){
 	        page=new Page(totalCount, p);
 	        page.setPageSize(10);
-	        stuList=tpOrderMapper.selectByPage(page.getStartPos(), page.getPageSize());//从startPos开始，获取pageSize条数据
+	        stuList=tpOrderMapper.selectByPage(type, page.getStartPos(), page.getPageSize());//从startPos开始，获取pageSize条数据
 	    }else{
 	        page=new Page(totalCount, 1);//初始化pageNow为1
 	        page.setPageSize(10);
-	        stuList=tpOrderMapper.selectByPage(page.getStartPos(), page.getPageSize());//从startPos开始，获取pageSize条数据
+	        stuList=tpOrderMapper.selectByPage(type, page.getStartPos(), page.getPageSize());//从startPos开始，获取pageSize条数据
 	    }
 	    LimitPageStuList.setPage(page);
 	    LimitPageStuList.setList(stuList);
@@ -165,6 +165,18 @@ public class TpOrderServiceImpl implements TpOrderService{
 
 	public TpOrder findOrderById(Integer id) {
 		return tpOrderMapper.findOrderById(id);
+	}
+
+	public int updataRecordRefundOrder(TpOrder tpOrder) {
+		return tpOrderMapper.updataRecordRefundOrder(tpOrder);
+	}
+
+	public int updataOrderConfirm(TpOrder tpOrder) {
+		return tpOrderMapper.updataOrderConfirm(tpOrder);
+	}
+
+	public int updateOrderAddress(TpOrder tpOrder) {
+		return tpOrderMapper.updateOrderAddress(tpOrder);
 	}
 
 	
